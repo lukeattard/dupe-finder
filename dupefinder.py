@@ -1,6 +1,9 @@
 from os import walk
 from os import stat
+import os
 import sys
+
+fGlobal = {}
 
 def get_files(mypath):
     fileDB = open(r"./.tmpList","w")
@@ -38,20 +41,35 @@ def get_files(mypath):
     fileDB.close()
     return f
 
-fGlobal = {}
-files =  get_files('/mnt/f/')
+def main():
+    args = sys.argv[1:]
+    try:
+        searchDirectory = args[1]
+        print("here\n")
+    except:
+        searchDirectory = os.getcwd()
+        pass
 
-dupeDB = open(r"./.dupeDB","w")
-existingFileName = []
+    files =  get_files(searchDirectory)
 
-for cKey in fGlobal.keys():
-    keyList = list(fGlobal[cKey]['siblings'].keys())
-    if len(keyList) > 1:
-        wo = "File: " + cKey + " has " + str(len(keyList)) + " possible dupes:\n"
-        print(wo)
-        dupeDB.writelines(wo)
-        for dupeFile in fGlobal[cKey]['siblings'].keys():
-            wo = "\t" + dupeFile + "\n"
+    dupeDB = open(r"./.dupeDB","w")
+    existingFileName = []
+
+    for cKey in fGlobal.keys():
+        keyList = list(fGlobal[cKey]['siblings'].keys())
+        if len(keyList) > 1:
+            wo = "File: " + cKey.replace('\\','/') + " has " + str(len(keyList)) + " possible dupes:\n"
             print(wo)
             dupeDB.writelines(wo)
-dupeDB.close()
+            for dupeFile in fGlobal[cKey]['siblings'].keys():
+                wo = "\t" + dupeFile + "\n"
+                print(wo)
+                dupeDB.writelines(wo)
+    dupeDB.close()
+    return
+
+def startSearch():
+    print("to be implemented")
+    return
+if __name__ == "__main__":
+    main()
